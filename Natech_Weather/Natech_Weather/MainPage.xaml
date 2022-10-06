@@ -4,9 +4,37 @@
              xmlns:local="clr-namespace:Natech_Weather"
              x:Class="Natech_Weather.MainPage">
 
-    <StackLayout x:DataType="local:MainPageViewModel">
+    <StackLayout x:DataType="local:MainPageViewModel" Padding="5">
         <Entry Text="{Binding CityInput}" />
         <Button Text="Get Weather" Command="{Binding GetWeatherCommand}" />
+
+        <Grid IsVisible="{Binding ShowingData}" Padding="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Label Text="Location" Grid.Column="0" Grid.Row="0" />
+            <Label Text="{Binding Location}" Grid.Column="1" Grid.Row="0" />
+
+            <Label Text="Temperature" Grid.Column="0" Grid.Row="1" />
+            <Label Text="{Binding Temperature}" Grid.Column="1" Grid.Row="1" />
+
+            <Label Text="Wind Speed" Grid.Column="0" Grid.Row="2" />
+            <Label Text="{Binding WindSpeed}" Grid.Column="1" Grid.Row="2" />
+
+            <Label Text="Humidity" Grid.Column="0" Grid.Row="3" />
+            <Label Text="{Binding Humidity}" Grid.Column="1" Grid.Row="3" />
+
+            <Label Text="Visibility" Grid.Column="0" Grid.Row="4" />
+            <Label Text="{Binding Visibility}" Grid.Column="1" Grid.Row="4" />
+        </Grid>
     </StackLayout>
 
 </ContentPage>

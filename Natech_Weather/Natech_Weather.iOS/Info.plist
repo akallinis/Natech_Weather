@@ -34,5 +34,7 @@
     <string>Natech_Weather</string>
     <key>XSAppIconAssets</key>
     <string>Assets.xcassets/AppIcon.appiconset</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Location is needed to get weather data.</string>
 </dict>
 </plist>
