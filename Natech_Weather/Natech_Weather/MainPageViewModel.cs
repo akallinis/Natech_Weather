@@ -133,25 +133,25 @@ namespace Natech_Weather
             {
                 return;
             }
-            catch (FeatureNotSupportedException fnsEx)
+            catch (FeatureNotSupportedException)
             {
                 _playerService.PlayError();
                 await Application.Current.MainPage.DisplayAlert("Alert", "Geolocation feature is not supported.", "ok");
                 return;
             }
-            catch (FeatureNotEnabledException fnsEx)
+            catch (FeatureNotEnabledException)
             {
                 _playerService.PlayError();
                 await Application.Current.MainPage.DisplayAlert("Alert", "Geolocation feature is not enabled.", "ok");
                 return;
             }
-            catch (PermissionException perEx)
+            catch (PermissionException)
             {
                 _playerService.PlayError();
                 await Application.Current.MainPage.DisplayAlert("Alert", "Use of geolocation feature is not permitted.", "ok");
                 return;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 _playerService.PlayError();
                 return;
