@@ -97,6 +97,7 @@ namespace Natech_Weather
         #endregion
 
         #region commands
+        CancellationTokenSource cts;
         public ICommand GetWeatherCommand { get => new Command(async () => await GetWeather()); }
         private async Task GetWeather()
         {
@@ -104,36 +105,51 @@ namespace Natech_Weather
             ShowingData = false;
             try
             {
+                CancelRequest();
+                IsBusy = true;
+                cts = new CancellationTokenSource();
                 if (string.IsNullOrEmpty(CityInput))
                 {
                     var request = new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(10));
-                    var location = await Geolocation.GetLocationAsync(request);
-                    result = await _networkService.GetAsync<WeatherData>($"{Constants.OpenWeatherMapEndpoint}?lat={location.Latitude}&lon={location.Longitude}&units=metric&APPID={Constants.OpenWeatherMapAPIKey}");
+                    var location = await Geolocation.GetLocationAsync(request, cts.Token);
+                    result = await _networkService.GetAsync<WeatherData>($"{Constants.OpenWeatherMapEndpoint}?lat={location.Latitude}&lon={location.Longitude}&units=metric&APPID={Constants.OpenWeatherMapAPIKey}", cts.Token);
                 }
                 else
                 {
-                    result = await _networkService.GetAsync<WeatherData>($"{Constants.OpenWeatherMapEndpoint}?q={CityInput}&units=metric&APPID={Constants.OpenWeatherMapAPIKey}");
+                    result = await _networkService.GetAsync<WeatherData>($"{Constants.OpenWeatherMapEndpoint}?q={CityInput}&units=metric&APPID={Constants.OpenWeatherMapAPIKey}", cts.Token);
                 }
+            }
+            catch (OperationCanceledException)
+            {
+                return;
             }
             catch (FeatureNotSupportedException fnsEx)
             {
                 _playerService.PlayError();
+                await Application.Current.MainPage.DisplayAlert("Alert", "Geolocation feature is not supported.", "ok");
                 return;
             }
             catch (FeatureNotEnabledException fnsEx)
             {
                 _playerService.PlayError();
+                await Application.Current.MainPage.DisplayAlert("Alert", "Geolocation feature is not enabled.", "ok");
                 return;
             }
             catch (PermissionException perEx)
             {
                 _playerService.PlayError();
+                await Application.Current.MainPage.DisplayAlert("Alert", "Use of geolocation feature is not permitted.", "ok");
                 return;
             }
             catch (Exception ex)
             {
                 _playerService.PlayError();
                 return;
+            }
+            finally
+            {
+                IsBusy = false;
+                cts.Dispose();
             }
 
 
@@ -147,6 +163,9 @@ namespace Natech_Weather
             {
                 _playerService.PlayError();
             }
+
+            IsBusy = false;
+            cts.Dispose();
         }
         #endregion
 
@@ -165,6 +184,12 @@ namespace Natech_Weather
             Humidity = $"{data.Main.Humidity}";
             Visibility = data.Weather.FirstOrDefault().Visibility;
             ShowingData = true;
+        }
+
+        private void CancelRequest()
+        {
+            if (IsBusy && cts != null)
+                cts.Cancel();
         }
         #endregion
     }
