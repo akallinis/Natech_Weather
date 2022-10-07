@@ -118,6 +118,16 @@ namespace Natech_Weather
                 {
                     result = await _networkService.GetAsync<WeatherData>($"{Constants.OpenWeatherMapEndpoint}?q={CityInput}&units=metric&APPID={Constants.OpenWeatherMapAPIKey}", cts.Token);
                 }
+
+                if (result != null && result.Cod == 200)
+                {
+                    PopulateData(result);
+                    _playerService.PlaySuccess();
+                }
+                else
+                {
+                    _playerService.PlayError();
+                }
             }
             catch (OperationCanceledException)
             {
@@ -151,21 +161,6 @@ namespace Natech_Weather
                 IsBusy = false;
                 cts.Dispose();
             }
-
-
-
-            if (result != null && result.Cod == 200)
-            {
-                PopulateData(result);
-                _playerService.PlaySuccess();
-            }
-            else
-            {
-                _playerService.PlayError();
-            }
-
-            IsBusy = false;
-            cts.Dispose();
         }
         #endregion
 
